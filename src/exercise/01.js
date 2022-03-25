@@ -3,21 +3,24 @@
 
 import * as React from 'react'
 
-// {newState} === currentState => ({count: currentState.count + step})
-// therefore: newState(state) === (state => ({count: state.count + step}))()
-const countReducer = (state, newState) => ({
-	// the spread operator is for the case where the state is an object
-	...state,
-	...(typeof newState === 'function' ? newState(state) : newState),
-})
+const countReducer = (state, newState) => {
+	const {type, step} = newState
+	switch (type) {
+		case 'INCREMENT': {
+			return {...state, count: state.count + step}
+		}
+		default: {
+			throw new Error(`Unsupported action type: ${type}`)
+		}
+	}
+}
 
 function Counter({initialCount = 0, step = 1}) {
-	const [state, setState] = React.useReducer(countReducer, {
+	const [state, dispatch] = React.useReducer(countReducer, {
 		count: initialCount,
 	})
 	const {count} = state
-	const increment = () =>
-		setState(currentState => ({count: currentState.count + step}))
+	const increment = () => dispatch({type: 'INCREMENT', step})
 
 	return <button onClick={increment}>{count}</button>
 }
