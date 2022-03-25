@@ -3,17 +3,21 @@
 
 import * as React from 'react'
 
-const countReducer = (state, newState) => ({...state, ...newState}) // basically replacing {state} with {newState}
+// {newState} === currentState => ({count: currentState.count + step})
+// therefore: newState(state) === (state => ({count: state.count + step}))()
+const countReducer = (state, newState) => ({
+	// the spread operator is for the case where the state is an object
+	...state,
+	...(typeof newState === 'function' ? newState(state) : newState),
+})
 
 function Counter({initialCount = 0, step = 1}) {
-	// 🐨 replace React.useState with React.useReducer.
-	// const [count, setCount] = React.useState(initialCount)
-
 	const [state, setState] = React.useReducer(countReducer, {
 		count: initialCount,
 	})
 	const {count} = state
-	const increment = () => setState({count: count + step})
+	const increment = () =>
+		setState(currentState => ({count: currentState.count + step}))
 
 	return <button onClick={increment}>{count}</button>
 }
