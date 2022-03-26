@@ -31,7 +31,7 @@ function pokemonInfoReducer(_state, action) {
 	}
 }
 
-function useAsync(asyncCallback, initialState, dependencies) {
+function useAsync(asyncCallback, initialState) {
 	const [state, dispatch] = React.useReducer(pokemonInfoReducer, {
 		// Coz this hook supposed to be generic so assuming that we "don't" know what the {pokemonName} is, therefore we'll have to merge the `status` with `initialState`
 		status: 'idle',
@@ -57,29 +57,27 @@ function useAsync(asyncCallback, initialState, dependencies) {
 				dispatch({type: 'rejected', error})
 			},
 		)
-		// 🐨 you'll accept dependencies as an array and pass that here.
-		// 🐨 because of limitations with ESLint, you'll need to ignore
-		// the react-hooks/exhaustive-deps rule. We'll fix this in an extra credit.
-	}, [dependencies])
+	}, [asyncCallback])
 	return state
 }
 
 function PokemonInfo({pokemonName}) {
-	// 🐨 here's how you'll use the new useAsync hook you're writing:
+	// Using useCallback() to return the catched fetchPokemon() function if `pokemonName` didn't change between renders:
+
+	const asyncCallback = React.useCallback(() => {
+		if (!pokemonName) {
+			return
+		}
+
+		return fetchPokemon(pokemonName) // `promise`
+	}, [pokemonName])
+
 	const state = useAsync(
-		// asyncCallback:
-		() => {
-			if (!pokemonName) {
-				return
-			}
-			return fetchPokemon(pokemonName) // `promise`
-		},
+		// calling the cached `asyncCallback`:
+		asyncCallback,
 
 		// initialState:
 		{status: pokemonName ? 'pending' : 'idle'},
-
-		// dependencies:
-		pokemonName,
 	)
 
 	const {data, status, error} = state
@@ -127,6 +125,7 @@ function App() {
 
 function AppWithUnmountCheckbox() {
 	const [mountApp, setMountApp] = React.useState(true)
+
 	return (
 		<div>
 			<label>
