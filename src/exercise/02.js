@@ -31,7 +31,7 @@ function pokemonInfoReducer(_state, action) {
 	}
 }
 
-function useAsync(asyncCallback, initialState) {
+function useAsync(initialState) {
 	const [state, dispatch] = React.useReducer(pokemonInfoReducer, {
 		// Coz this hook supposed to be generic so assuming that we "don't" know what the {pokemonName} is, therefore we'll have to merge the `status` with `initialState`
 		status: 'idle',
@@ -39,10 +39,7 @@ function useAsync(asyncCallback, initialState) {
 		error: null,
 		...initialState,
 	})
-
-	React.useEffect(() => {
-		// 💰 this first early-exit bit is a little tricky, so let me give you a hint:
-		const promise = asyncCallback()
+	const run = React.useCallback(promise => {
 		if (!promise) {
 			return
 		}
@@ -57,30 +54,26 @@ function useAsync(asyncCallback, initialState) {
 				dispatch({type: 'rejected', error})
 			},
 		)
-	}, [asyncCallback])
-	return state
+	}, []) // empty dep arr coz if there's a dependency, it'll be the `dispatch()` function, but since the implementation of `useReducer()` ensures that `dispatch()` won't change its reference between re-renders, therefore we don't need to put it in the dep arr. One other thing is the `promise`, in this case it's passed in as an argument, so there'd be no referential difference between renders as well
+
+	return {...state, run}
 }
 
 function PokemonInfo({pokemonName}) {
-	// Using useCallback() to return the catched fetchPokemon() function if `pokemonName` didn't change between renders:
+	const {data, status, error, run} = useAsync({
+		status: pokemonName ? 'pending' : 'idle',
+	})
 
-	const asyncCallback = React.useCallback(() => {
+	React.useEffect(() => {
 		if (!pokemonName) {
 			return
 		}
-
-		return fetchPokemon(pokemonName) // `promise`
-	}, [pokemonName])
-
-	const state = useAsync(
-		// calling the cached `asyncCallback`:
-		asyncCallback,
-
-		// initialState:
-		{status: pokemonName ? 'pending' : 'idle'},
-	)
-
-	const {data, status, error} = state
+		// 💰 note the absence of `await` here. We're literally passing the promise
+		// to `run` so `useAsync` can attach it's own `.then` handler on it to keep
+		// track of the state of the promise.
+		const pokemonPromise = fetchPokemon(pokemonName)
+		run(pokemonPromise)
+	}, [pokemonName, run])
 
 	switch (status) {
 		case 'idle':
