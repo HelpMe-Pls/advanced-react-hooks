@@ -31,30 +31,57 @@ function pokemonInfoReducer(_state, action) {
 	}
 }
 
+function useSafeDispatch(dispatch) {
+	const mountedRef = React.useRef(false)
+
+	// to make this even more generic you should use the `useLayoutEffect()` hook to
+	// make sure that you are correctly setting the mountedRef.current immediately
+	// after React updates the DOM. Even though this effect does not interact
+	// with the dom, another side effect inside a useLayoutEffect which does
+	// interact with the dom may depend on the value being set
+	React.useEffect(() => {
+		mountedRef.current = true
+		return () => {
+			mountedRef.current = false
+		}
+	}, [])
+
+	return React.useCallback(
+		(...args) => (mountedRef.current ? dispatch(...args) : void 0),
+		[dispatch],
+	)
+}
+
 function useAsync(initialState) {
-	const [state, dispatch] = React.useReducer(pokemonInfoReducer, {
+	const [state, vulnerableDispatch] = React.useReducer(pokemonInfoReducer, {
 		// Coz this hook supposed to be generic so assuming that we "don't" know what the {pokemonName} is, therefore we'll have to merge the `status` with `initialState`
 		status: 'idle',
 		data: null,
 		error: null,
 		...initialState,
 	})
-	const run = React.useCallback(promise => {
-		if (!promise) {
-			return
-		}
 
-		// then you can dispatch and handle the promise etc...
-		dispatch({type: 'pending'})
-		promise.then(
-			data => {
-				dispatch({type: 'resolved', data})
-			},
-			error => {
-				dispatch({type: 'rejected', error})
-			},
-		)
-	}, []) // empty dep arr coz if there's a dependency, it'll be the `dispatch()` function, but since the implementation of `useReducer()` ensures that `dispatch()` won't change its reference between re-renders, therefore we don't need to put it in the dep arr. One other thing is the `promise`, in this case it's passed in as an argument, so there'd be no referential difference between renders as well
+	const dispatch = useSafeDispatch(vulnerableDispatch)
+
+	const run = React.useCallback(
+		promise => {
+			if (!promise) {
+				return
+			}
+
+			// then you can dispatch and handle the promise etc...
+			dispatch({type: 'pending'})
+			promise.then(
+				data => {
+					dispatch({type: 'resolved', data})
+				},
+				error => {
+					dispatch({type: 'rejected', error})
+				},
+			)
+		},
+		[dispatch],
+	)
 
 	return {...state, run}
 }
