@@ -6,7 +6,13 @@ import * as React from 'react'
 // 🐨 create your CountContext here with React.createContext
 const CountContext = React.createContext()
 
-export const useCount = () => React.useContext(CountContext)
+export const useCount = () => {
+	const context = React.useContext(CountContext)
+	if (!context) {
+		throw new Error('useCount must be used within a CountProvider')
+	}
+	return context
+}
 
 // 🐨 create a CountProvider component here that does this:
 //   🐨 get the count state and setCount updater with React.useState
