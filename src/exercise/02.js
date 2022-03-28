@@ -50,7 +50,7 @@ function useSafeDispatch(dispatch) {
 		// `void 0`: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/void#description
 
 		(...args) => (mountedRef.current ? dispatch(...args) : void 0),
-		[dispatch],
+		[dispatch], //https://devtrium.com/posts/dependency-arrays#refs
 	)
 }
 
