@@ -5,7 +5,12 @@ import * as React from 'react'
 
 function MessagesDisplay({messages}) {
 	const containerRef = React.useRef()
-	// 🐨 replace useEffect with useLayoutEffect
+	// When we trigger a re-render (in this case by clicking "add message"), React updates DOM, the new DOM then gets painted to the screen, and THEN the callback inside `useEffect()` gets executed, therefore:
+	// the message shows up BEFORE the scroll happens if we're using `useEffect()`
+	// and the "scrolling to bottom effect" is basically a DOM mutation
+	// that's why it needs to be executed BEFORE the browser paints that mutation
+	// and that's why we need `useLayoutEffect()` for that particular case
+	// One other case is to make sure the callback inside `useLayoutEffect()` is executed before ANY other effects (more details at 02:25 from https://epicreact.dev/modules/advanced-react-hooks/uselayouteffect-auto-growing-textarea-solution)
 	React.useEffect(() => {
 		containerRef.current.scrollTop = containerRef.current.scrollHeight
 	})

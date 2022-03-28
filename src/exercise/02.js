@@ -39,6 +39,7 @@ function useSafeDispatch(dispatch) {
 	// after React updates the DOM. Even though this effect does not interact
 	// with the dom, another side effect inside a useLayoutEffect which does
 	// interact with the dom may depend on the value being set
+	// More details at 05:35 from https://epicreact.dev/modules/advanced-react-hooks/usecallback-custom-hooks-extra-credit-solution-3
 	React.useEffect(() => {
 		mountedRef.current = true
 		return () => {
