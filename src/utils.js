@@ -16,7 +16,7 @@ function useSafeDispatch(dispatch) {
 	)
 }
 
-function asyncReducer(state, action) {
+function asyncReducer(_state, action) {
 	switch (action.type) {
 		case 'pending': {
 			return {status: 'pending', data: null, error: null}
