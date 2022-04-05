@@ -17,7 +17,7 @@ const formatDate = (date: Date) =>
 async function fetchPokemon(
 	name: string,
 	{signal, delay = 1500}: {signal?: AbortSignal; delay?: number} = {},
-): Promise<PokemonApiResponse> {
+): Promise<PokemonData> {
 	const pokemonQuery = `
     query PokemonInfo($name: String) {
       pokemon(name: $name) {

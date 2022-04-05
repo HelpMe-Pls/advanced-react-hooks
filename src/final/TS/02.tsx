@@ -106,15 +106,13 @@ function useAsync<DataType>() {
 	}, [])
 
 	return {
-		error,
-		status,
-		data,
+		...state,
 		run,
 	}
 }
 
 function PokemonInfo({pokemonName}: {pokemonName: string}) {
-	const {data, status, error, run} = useAsync<PokemonApiResponse>()
+	const {run, ...state} = useAsync<PokemonData>()
 
 	React.useEffect(() => {
 		if (!pokemonName) {
@@ -127,15 +125,15 @@ function PokemonInfo({pokemonName}: {pokemonName: string}) {
 		}
 	}, [pokemonName, run])
 
-	switch (status) {
+	switch (state.status) {
 		case 'idle':
 			return <span>Submit a pokemon</span>
 		case 'pending':
 			return <PokemonInfoFallback name={pokemonName} />
 		case 'rejected':
-			throw error
+			throw state.error
 		case 'resolved':
-			return <PokemonDataView pokemon={data} />
+			return <PokemonDataView pokemon={state.data} />
 		default:
 			throw new Error('This should be impossible')
 	}
