@@ -2,7 +2,6 @@ import * as React from 'react'
 import type {PokemonData} from './types'
 import type {FallbackProps, ErrorBoundaryProps} from 'react-error-boundary'
 import {ErrorBoundary} from 'react-error-boundary'
-import {PokemonApiResponse} from './final/TS/02'
 
 const formatDate = (date: Date) =>
 	`${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')} ${String(
