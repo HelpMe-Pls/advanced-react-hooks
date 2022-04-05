@@ -1,13 +1,23 @@
 import * as React from 'react'
+import type {PokemonData} from './types'
+import type {FallbackProps, ErrorBoundaryProps} from 'react-error-boundary'
 import {ErrorBoundary} from 'react-error-boundary'
+import {PokemonApiResponse} from './final/TS/02'
 
-const formatDate = date =>
+const formatDate = (date: Date) =>
 	`${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')} ${String(
 		date.getSeconds(),
 	).padStart(2, '0')}.${String(date.getMilliseconds()).padStart(3, '0')}`
 
-// the delay argument is for faking things out a bit
-function fetchPokemon(name, delay = 1500) {
+/**
+ *
+ * @param name the name of the pokemon
+ * @param delay an arbitrary delay (to test loading states). This is optional and defaults to 1500
+ */
+async function fetchPokemon(
+	name: string,
+	{signal, delay = 1500}: {signal?: AbortSignal; delay?: number} = {},
+): Promise<PokemonApiResponse> {
 	const pokemonQuery = `
     query PokemonInfo($name: String) {
       pokemon(name: $name) {
@@ -26,51 +36,60 @@ function fetchPokemon(name, delay = 1500) {
     }
   `
 
-	return window
-		.fetch('https://graphql-pokemon2.vercel.app/', {
+	const response = await window.fetch(
+		'https://graphql-pokemon2.vercel.app/',
+		{
 			// learn more about this API here: https://graphql-pokemon2.vercel.app/
 			method: 'POST',
 			headers: {
 				'content-type': 'application/json;charset=UTF-8',
-				delay: delay,
+				delay: String(delay),
 			},
+			signal,
 			body: JSON.stringify({
 				query: pokemonQuery,
 				variables: {name: name.toLowerCase()},
 			}),
-		})
-		.then(async response => {
-			const {data} = await response.json()
-			if (response.ok) {
-				const pokemon = data?.pokemon
-				if (pokemon) {
-					pokemon.fetchedAt = formatDate(new Date())
-					return pokemon
-				} else {
-					return Promise.reject(
-						new Error(`No pokemon with the name "${name}"`),
-					)
-				}
-			} else {
-				// handle the graphql errors
-				const error = {
-					message: data?.errors?.map(e => e.message).join('\n'),
-				}
-				return Promise.reject(error)
-			}
-		})
+		},
+	)
+
+	type JSONResponse = {
+		data?: {
+			pokemon: Omit<PokemonData, 'fetchedAt'>
+		}
+		errors?: Array<{message: string}>
+	}
+	const {data, errors}: JSONResponse = await response.json()
+	if (response.ok) {
+		const pokemon = data?.pokemon
+		if (pokemon) {
+			// add fetchedAt helper
+			return Object.assign(pokemon, {fetchedAt: formatDate(new Date())})
+		} else {
+			return Promise.reject(
+				new Error(`No pokemon with the name "${name}"`),
+			)
+		}
+	} else {
+		// handle the graphql errors
+		const error = new Error(
+			errors?.map(e => e.message).join('\n') ?? 'unknown',
+		)
+		return Promise.reject(error)
+	}
 }
 
-function PokemonInfoFallback({name}) {
+function PokemonInfoFallback({name}: {name: string}) {
 	const initialName = React.useRef(name).current
-	const fallbackPokemonData = {
+	const fallbackPokemonData: PokemonData = {
+		id: 'loading-pokemon',
 		name: initialName,
 		number: 'XXX',
 		image: '/img/pokemon/fallback-pokemon.jpg',
 		attacks: {
 			special: [
-				{name: 'Loading Attack 1', type: 'Type', damage: 'XX'},
-				{name: 'Loading Attack 2', type: 'Type', damage: 'XX'},
+				{name: 'Loading Attack 1', type: 'Type', damage: -1},
+				{name: 'Loading Attack 2', type: 'Type', damage: -1},
 			],
 		},
 		fetchedAt: 'loading...',
@@ -78,7 +97,7 @@ function PokemonInfoFallback({name}) {
 	return <PokemonDataView pokemon={fallbackPokemonData} />
 }
 
-function PokemonDataView({pokemon}) {
+function PokemonDataView({pokemon}: {pokemon: PokemonData}) {
 	return (
 		<div>
 			<div className="pokemon-info__img-wrapper">
@@ -96,7 +115,8 @@ function PokemonDataView({pokemon}) {
 						<li key={attack.name}>
 							<label>{attack.name}</label>:{' '}
 							<span>
-								{attack.damage} <small>({attack.type})</small>
+								{attack.damage < 0 ? 'XX' : attack.damage}{' '}
+								<small>({attack.type})</small>
 							</span>
 						</li>
 					))}
@@ -111,8 +131,12 @@ function PokemonDataView({pokemon}) {
 
 function PokemonForm({
 	pokemonName: externalPokemonName,
-	initialPokemonName = externalPokemonName || '',
+	initialPokemonName = externalPokemonName ?? '',
 	onSubmit,
+}: {
+	pokemonName: string
+	initialPokemonName?: string
+	onSubmit: (newPokemonName: string) => void
 }) {
 	const [pokemonName, setPokemonName] = React.useState(initialPokemonName)
 
@@ -128,16 +152,16 @@ function PokemonForm({
 		}
 	}, [externalPokemonName])
 
-	function handleChange(e) {
-		setPokemonName(e.target.value)
+	function handleChange(e: React.SyntheticEvent<HTMLInputElement>) {
+		setPokemonName(e.currentTarget.value)
 	}
 
-	function handleSubmit(e) {
+	function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
 		e.preventDefault()
 		onSubmit(pokemonName)
 	}
 
-	function handleSelect(newPokemonName) {
+	function handleSelect(newPokemonName: string) {
 		setPokemonName(newPokemonName)
 		onSubmit(newPokemonName)
 	}
@@ -179,6 +203,7 @@ function PokemonForm({
 					placeholder="Pokemon Name..."
 					value={pokemonName}
 					onChange={handleChange}
+					onClick={handleChange}
 				/>
 				<button type="submit" disabled={!pokemonName.length}>
 					Submit
@@ -188,7 +213,7 @@ function PokemonForm({
 	)
 }
 
-function ErrorFallback({error, resetErrorBoundary}) {
+function ErrorFallback({error, resetErrorBoundary}: FallbackProps) {
 	return (
 		<div role="alert">
 			There was an error:{' '}
@@ -198,7 +223,11 @@ function ErrorFallback({error, resetErrorBoundary}) {
 	)
 }
 
-function PokemonErrorBoundary(props) {
+function PokemonErrorBoundary(
+	props: Pick<ErrorBoundaryProps, 'onReset' | 'resetKeys'> & {
+		children: React.ReactNode
+	},
+) {
 	return <ErrorBoundary FallbackComponent={ErrorFallback} {...props} />
 }
 
