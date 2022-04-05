@@ -37,7 +37,6 @@ type AsyncState<DataType> =
 			error: Error
 			promise: null
 	  }
-export type PokemonApiResponse = AsyncState<PokemonData>
 
 type AsyncAction<DataType> =
 	| {type: 'reset'}
@@ -90,8 +89,6 @@ function useAsync<DataType>() {
 		data: null,
 		error: null,
 	})
-
-	const {data, error, status} = state
 
 	const run = React.useCallback((promise: Promise<DataType>) => {
 		dispatch({type: 'pending', promise})
