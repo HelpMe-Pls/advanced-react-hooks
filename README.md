@@ -24,3 +24,4 @@
 - Assigning custom methods to `ref.current` by using [`useImperativeHandle`](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/extra/src/final/TS/05.tsx) hook
 
 ## `useDebugValue`:     
+- `useDebugValue` can **only** be called inside of a custom hook and is used to label custom hooks so you can easily identify them in the React DevTools
