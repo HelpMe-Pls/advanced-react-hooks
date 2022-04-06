@@ -58,6 +58,7 @@ function asyncReducer<DataType>(
 			}
 		}
 		case 'resolved': {
+			// Type checking to prevent "race condition"
 			if (action.promise !== state.promise) return state
 			return {
 				status: 'resolved',
@@ -89,6 +90,9 @@ function useAsync<DataType>() {
 		data: null,
 		error: null,
 	})
+
+	// Destructuring like this won't work for "discriminated union"
+	// const {data, error, status} = state
 
 	const run = React.useCallback((promise: Promise<DataType>) => {
 		dispatch({type: 'pending', promise})
