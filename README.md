@@ -6,6 +6,7 @@
 - Classic Redux `dispatch` approach to `useReducer()`
 
 ## `useCallback` - custom hooks
+- [Consider](https://kentcdodds.com/blog/usememo-and-usecallback) **when** to `useCallback`
 - [Discriminated union](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions) for typing a promise's responses (note: [this won't work (line 94)](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/extra/src/final/TS/02.tsx) for destructured `state` properties)
 - Avoiding *race condition* by [type checking](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/extra/src/final/TS/02.tsx) the state's promise vs the action's promise
 - Abort unused requests [(at line 122)](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/extra/src/final/TS/02.tsx) by using the `new AbortController()` interface
