@@ -1,5 +1,5 @@
 # What I've learnt
-###### For more details, see `src/exercise/*.md` files
+###### For more details, see [`src/exercise/*.md`](https://github.com/HelpMe-Pls/advanced-react-hooks/tree/master/src/exercise) files
 -------------
 ## `useReducer`
 - [Type checking](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/extra/src/final/TS/01.extra-3.tsx) using `typeof` keyword to support an `action` in function and object form.
