@@ -12,7 +12,7 @@
 - Avoiding *race condition* by [type checking](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/extra/src/final/TS/02.tsx) the state's promise vs the action's promise.
 - Abort unused requests [(at line 122)](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/extra/src/final/TS/02.tsx) by using the `new AbortController()` interface.
 - Preventing memory leak by [cleaning up](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/master/src/exercise/02.js) the `ref` (example at the `useSafeDispatch` definition).
-- [Dependency array](https://epicreact.dev/modules/advanced-react-hooks/usecallback-custom-hooks-solution) @3:00.
+- Dependency array ([at 3:00](https://epicreact.dev/modules/advanced-react-hooks/usecallback-custom-hooks-solution)).
 - Spreading state object (in the custom hook defintion) and then destructuring it when we use that custom hook ([Extra Credit 2 at `useAsync()` hook](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/master/src/exercise/02.js)).
 
 ## `useContext`
