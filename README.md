@@ -20,7 +20,7 @@
 - [Sometimes](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/extra/src/final/TS/03.tsx) you don’t need context. The biggest use case for context is for libraries that need to implicitly share state between components (i.e. *compound component*).
 
 ## `useLayoutEffect`
-- `useLayoutEffect()` is invoked AFTER the render (DOM mutations) but BEFORE the browser paints the change. Use it if you need to mutate the DOM (making observable changes to the DOM) and/or do need to perform measurements that are essential to the browser paint (the appearance or placement of the UI elements on the screen). [Example](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/extra/src/final/TS/04.tsx).
+- `useLayoutEffect()` is invoked AFTER the render (DOM mutations) but BEFORE the browser paints the change. Use it if you need to mutate the DOM (making observable changes to the DOM) and/or **do need** to perform measurements that are essential to the browser paint (the appearance or placement of the UI elements on the screen). [Example](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/extra/src/final/TS/04.tsx).
 
 ## `useImperativeHandle`
 - Use `React.forwardRef` to pass a `ref` prop to a function component
