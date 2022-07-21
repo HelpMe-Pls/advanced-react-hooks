@@ -2,6 +2,7 @@
 ###### *For more details, see [`src/exercise/*.md`](https://github.com/HelpMe-Pls/advanced-react-hooks/tree/master/src/exercise) files*
 -------------
 ## `useReducer`
+- [How](https://codesandbox.io/s/how-usereducer-works-3bhcp) it works.
 - [Type checking](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/extra/src/final/TS/01.extra-3.tsx) using `typeof` keyword to support an `action` in function and object form.
 - The [classic Redux `dispatch`](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/master/src/final/TS/01.tsx) approach to `useReducer()`.
 
