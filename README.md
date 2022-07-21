@@ -3,7 +3,7 @@
 -------------
 ## `useReducer`
 - [Type checking](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/extra/src/final/TS/01.extra-3.tsx) using `typeof` keyword to support an `action` in function and object form.
-- Classic Redux `dispatch` approach to `useReducer()`.
+- The [classic Redux `dispatch`](https://github.com/HelpMe-Pls/advanced-react-hooks/blob/master/src/final/TS/01.tsx) approach to `useReducer()`.
 
 ## `useCallback` - custom hooks
 - [Consider](https://kentcdodds.com/blog/usememo-and-usecallback) **when** to `useCallback`.
