@@ -29,3 +29,36 @@
 
 ## `useDebugValue`    
 - `useDebugValue` can **only** be called inside of a custom hook and is used to label custom hooks so you can easily identify them in the React DevTools.
+
+## `useId`
+- The `useId()` hook takes no argument and helps generate a unique stable Id (as a `string`) [on both](https://youtu.be/_vwCKV7f_eA?t=188) the client-side and server-side.
+- Most common usage:
+```js
+function Checkbox() {
+  const id = useId();
+  return (
+    <>
+      <label htmlFor={id}>Do you like React?</label>
+      <input id={id} type="checkbox" name="react"/>
+    </>
+  );
+}
+
+// For multiple IDs in the same component, append a suffix using the same `id`:
+function NameFields() {
+  const id = useId();
+  return (
+    <div>
+      <label htmlFor={id + '-firstName'}>First Name</label>
+      <div>
+        <input id={id + '-firstName'} type="text" />
+      </div>
+      <label htmlFor={id + '-lastName'}>Last Name</label>
+      <div>
+        <input id={id + '-lastName'} type="text" />
+      </div>
+    </div>
+  );
+}
+```
+- The `useId()` hook is **not** used for generating the value of the `key` prop.
